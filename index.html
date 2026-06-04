@@ -912,20 +912,26 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--cyan);outline-offse
     <div class="contact-grid" style="margin-top:3rem">
       <!-- Form -->
       <div class="reveal reveal-delay-2">
-        <form class="contact-form glass" style="padding:var(--s5);border-radius:var(--r2)" id="contact-form">
+        <form class="contact-form glass" style="padding:var(--s5);border-radius:var(--r2)" id="contact-form" novalidate>
           <div class="form-field">
             <label class="form-label" for="cf-name">Name</label>
-            <input class="form-input" type="text" id="cf-name" name="name" placeholder="Your name" required/>
+            <input class="form-input" type="text" id="cf-name" name="name" placeholder="Your name" required autocomplete="name"/>
           </div>
           <div class="form-field">
             <label class="form-label" for="cf-email">Email</label>
-            <input class="form-input" type="email" id="cf-email" name="email" placeholder="you@company.com" required/>
+            <input class="form-input" type="email" id="cf-email" name="email" placeholder="you@company.com" required autocomplete="email"/>
           </div>
           <div class="form-field">
             <label class="form-label" for="cf-msg">Message</label>
             <textarea class="form-input form-textarea" id="cf-msg" name="message" placeholder="Tell me about the role or project..." required></textarea>
           </div>
-          <button type="submit" class="btn btn-cyan" style="width:100%;justify-content:center">Send Message &rarr;</button>
+          <button type="submit" class="btn btn-cyan" id="cf-btn" style="width:100%;justify-content:center">Send Message &rarr;</button>
+          <div id="cf-success" style="display:none;text-align:center;padding:.75rem;border-radius:var(--r);background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);color:#4ade80;font-size:.85rem;font-family:var(--mono)">
+            Message sent! I'll get back to you soon.
+          </div>
+          <div id="cf-error" style="display:none;text-align:center;padding:.75rem;border-radius:var(--r);background:rgba(255,92,0,.1);border:1px solid rgba(255,92,0,.25);color:var(--orange);font-size:.85rem;font-family:var(--mono)">
+            Something went wrong. Please email me directly at athirathbommerla7@gmail.com
+          </div>
         </form>
       </div>
 
@@ -1134,14 +1140,48 @@ mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => 
   document.body.style.overflow = '';
 }));
 
-/* ── CONTACT FORM (mailto) ── */
-document.getElementById('contact-form').addEventListener('submit', function(e) {
+/* ── CONTACT FORM (Web3Forms) ── */
+document.getElementById('contact-form').addEventListener('submit', async function(e) {
   e.preventDefault();
-  const name = document.getElementById('cf-name').value;
-  const email = document.getElementById('cf-email').value;
-  const msg = document.getElementById('cf-msg').value;
-  const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${msg}`);
-  window.location.href = `mailto:athirathbommerla7@gmail.com?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${body}`;
+  const btn  = document.getElementById('cf-btn');
+  const ok   = document.getElementById('cf-success');
+  const err  = document.getElementById('cf-error');
+  const name = document.getElementById('cf-name').value.trim();
+  const email= document.getElementById('cf-email').value.trim();
+  const msg  = document.getElementById('cf-msg').value.trim();
+
+  if (!name || !email || !msg) return;
+
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+  ok.style.display = 'none';
+  err.style.display = 'none';
+
+  try {
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        access_key: 'YOUR_WEB3FORMS_KEY', /* get free key at web3forms.com → enter athirathbommerla7@gmail.com */
+        name, email, message: msg,
+        subject: `Portfolio contact from ${name}`,
+        from_name: 'Portfolio Contact Form',
+        replyto: email,
+      })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      ok.style.display = 'block';
+      this.reset();
+    } else {
+      throw new Error(data.message || 'Failed');
+    }
+  } catch(_) {
+    err.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Send Message →';
+  }
 });
 
 /* ── CURSOR GLOW ── */
