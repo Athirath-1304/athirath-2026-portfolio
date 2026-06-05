@@ -417,14 +417,53 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--cyan);outline-offse
   html{scroll-behavior:auto}
 }
 
-/* ── RESPONSIVE ── */
+/* ── MOBILE PIPELINE ── */
+.pipe-desktop{display:block}
+.pipe-mobile{
+  display:none;flex-direction:column;align-items:center;gap:0;
+  width:100%;position:relative;z-index:1;
+}
+.pm-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;width:100%}
+.pm-node{
+  font-size:.7rem;font-family:var(--mono);
+  padding:.32rem .75rem;border-radius:var(--pill);
+  background:rgba(255,92,0,.08);border:1px solid rgba(255,92,0,.28);
+  color:var(--muted2);white-space:nowrap;
+}
+.pm-connector{display:flex;flex-direction:column;align-items:center;padding:.4rem 0}
+.pm-connector-line{
+  width:2px;height:28px;
+  background:linear-gradient(180deg,rgba(255,92,0,.6),rgba(255,92,0,.15));
+  border-radius:2px;position:relative;overflow:hidden;
+}
+.pm-connector-dot{
+  width:6px;height:6px;background:#FF5C00;border-radius:50%;
+  position:absolute;left:-2px;
+  animation:dotSlide 1.4s ease-in-out infinite;
+  box-shadow:0 0 6px rgba(255,92,0,.8);
+}
+.pm-connector-dot-2{animation-delay:-.7s}
+@keyframes dotSlide{
+  0%{top:-6px;opacity:0} 15%{opacity:1} 85%{opacity:1} 100%{top:100%;opacity:0}
+}
+.pm-core{
+  background:#FF5C00;border-radius:14px;
+  padding:.75rem 1.75rem;text-align:center;
+  box-shadow:0 0 24px rgba(255,92,0,.35);
+  margin:.1rem 0;
+}
+.pm-core-title{display:block;font-size:1rem;font-weight:600;color:#080B12;font-family:var(--mono)}
+.pm-core-sub{font-size:.72rem;color:rgba(8,11,18,.7);font-family:var(--mono)}
+
+/* ── RESPONSIVE 768px ── */
 @media(max-width:768px){
   .hamburger{display:flex}
   .nav-links,.nav-available,.nav-right>.theme-toggle{display:none}
   .nav-right{gap:var(--s2)}
-  .hamburger{display:flex}
-  .stats-bar{flex-wrap:wrap}
-  .stat{border-right:none;border-bottom:1px solid var(--border);flex:1 1 45%}
+  .stats-bar{display:grid;grid-template-columns:repeat(2,1fr)}
+  .stat{border:none;border-bottom:1px solid var(--border);border-right:1px solid var(--border);padding:1.5rem 1rem}
+  .stat:nth-child(2n){border-right:none}
+  .stat:nth-child(3),.stat:nth-child(4){border-bottom:none}
   .timeline{padding-left:var(--s4)}
   .tl-header{flex-direction:column}
   .bento-grid{grid-template-columns:1fr;padding:0 var(--s3) var(--s5)}
@@ -434,10 +473,57 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--cyan);outline-offse
   .footer-inner{flex-direction:column;gap:var(--s3);text-align:center}
   .contact-bg-text{display:none}
 }
-@media(max-width:480px){
-  .skills-grid{grid-template-columns:1fr}
-  .stat{flex:1 1 100%}
-  .hero-h1{font-size:2.6rem}
+
+/* ── MOBILE 640px (iPhone) ── */
+@media(max-width:640px){
+  /* Hero */
+  .hero{padding:4.5rem 1.25rem 2.5rem;min-height:auto}
+  .hero-avatar{width:80px;height:80px;margin-bottom:var(--s3)}
+  .hero-h1{font-size:2.3rem;min-height:auto;margin-bottom:var(--s3)}
+  .hero-sub{font-size:.92rem;margin-bottom:var(--s4)}
+  .hero-cta{flex-direction:column;align-items:stretch;gap:.6rem}
+  .hero-cta .btn{width:100%;justify-content:center;padding:.8rem 1rem}
+
+  /* Pipeline: hide desktop SVG, show mobile vertical */
+  .pipe-desktop{display:none}
+  .pipe-mobile{display:flex}
+  .pipeline-wrap{padding:var(--s3) var(--s3) var(--s4);margin-top:var(--s4)}
+
+  /* Stats */
+  .stat-num{font-size:1.8rem}
+
+  /* Sections */
+  .section-inner{padding:var(--s6) var(--s3)}
+  .section-title{font-size:1.8rem}
+  .section-sub{font-size:.9rem;margin-bottom:var(--s5)}
+
+  /* Timeline */
+  .timeline{padding-left:var(--s3)}
+  .tl-card{padding:var(--s3)}
+  .tl-company{font-size:1rem}
+  .tl-bullets li{font-size:.82rem}
+  .tl-date-badge{font-size:.63rem}
+
+  /* Projects */
+  .proj-vis{height:160px}
+  .bento-wide .proj-vis{height:160px}
+  .proj-body{padding:var(--s3)}
+  .proj-name{font-size:.95rem}
+  .proj-desc{font-size:.82rem}
+
+  /* Skills */
+  .skills-grid{grid-template-columns:1fr;padding:0 var(--s3) var(--s5)}
+  .skill-card{padding:var(--s3)}
+
+  /* Education */
+  .edu-card{padding:var(--s4)}
+
+  /* Contact form */
+  .contact-form{padding:var(--s4) !important}
+  .contact-grid{gap:var(--s4)}
+
+  /* Footer */
+  .footer-copy{font-size:.7rem}
 }
 </style>
 </head>
@@ -511,7 +597,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--cyan);outline-offse
     <!-- Animated pipeline -->
     <div class="pipeline-wrap reveal">
       <p class="pipeline-label">Live pipeline architecture</p>
-      <svg viewBox="0 0 680 125" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;min-width:460px;position:relative;z-index:1">
+      <div class="pipe-desktop"><svg viewBox="0 0 680 125" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;position:relative;z-index:1">
         <defs>
           <linearGradient id="cg" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stop-color="#FF5C00" stop-opacity=".6"/>
@@ -550,7 +636,38 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--cyan);outline-offse
         <polygon points="460,18 454,22 454,18" fill="rgba(255,92,0,.5)"/>
         <polygon points="460,56 454,60 454,56" fill="rgba(255,92,0,.5)"/>
         <polygon points="460,94 454,98 454,94" fill="rgba(255,92,0,.5)"/>
-      </svg>
+      </svg></div>
+
+      <!-- Mobile vertical pipeline -->
+      <div class="pipe-mobile">
+        <div class="pm-row">
+          <span class="pm-node">CSV / SQL</span>
+          <span class="pm-node">REST API</span>
+          <span class="pm-node">IoT / SCADA</span>
+        </div>
+        <div class="pm-connector">
+          <div class="pm-connector-line">
+            <div class="pm-connector-dot"></div>
+            <div class="pm-connector-dot pm-connector-dot-2"></div>
+          </div>
+        </div>
+        <div class="pm-core">
+          <span class="pm-core-title">Airflow</span>
+          <span class="pm-core-sub">dbt &middot; Kafka</span>
+        </div>
+        <div class="pm-connector">
+          <div class="pm-connector-line">
+            <div class="pm-connector-dot"></div>
+            <div class="pm-connector-dot pm-connector-dot-2"></div>
+          </div>
+        </div>
+        <div class="pm-row">
+          <span class="pm-node">Snowflake</span>
+          <span class="pm-node">ML Model</span>
+          <span class="pm-node">Power BI</span>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
